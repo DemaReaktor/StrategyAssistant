@@ -1,4 +1,5 @@
 from Order import OrderStatus
+from Action import Action, ActionType
 
 
 class StrategyRealizer:
@@ -7,11 +8,18 @@ class StrategyRealizer:
         self.__orders = []
         self.__start_price = start_price
 
+    def start(self, price, time):
+        action = Action(ActionType.Start, price, time)
+        self.__orders = self.__strategy(action, self.__start_price, self.__orders)
+
+    def finish(self, price, time):
+        action = Action(ActionType.Finish, price, time)
+        self.__orders = self.__strategy(action, self.__start_price, self.__orders)
+
     def update(self, price, time):
+        action = Action(ActionType.Update, price, time)
         [order.update(price, time) for order in self.__orders]
-        self.__orders = self.__strategy.remove(price, self.__start_price, time, self.__orders)
-        self.__orders.extend(self.__strategy.input(price, self.__start_price, time, self.__orders))
-        self.__orders.extend(self.__strategy.output(price, self.__start_price, time, self.__orders))
+        self.__orders = self.__strategy(action, self.__start_price, self.__orders)
 
     @property
     def orders(self):

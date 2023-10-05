@@ -1,6 +1,7 @@
 from StrategyRealizer import StrategyRealizer
 from Strategy import Strategy
 from Order import OrderStatus, Order, OrderType
+from Action import ActionType, Action
 
 
 class PyramidStrategy(StrategyRealizer):
@@ -12,7 +13,15 @@ class PyramidStrategy(StrategyRealizer):
         super().__init__(Strategy(self.__input, self.__output, self.__remove), start_price)
 
     @staticmethod
-    def __input(price, start_price, time, orders):
+    def __input(action, start_price, orders):
+        if action.type == ActionType.Start:
+            orders = []
+            for x in range(0, 5):
+                orders.append(Order(OrderType.Buy, start_price * (1 - x * PyramidStrategy.distance),
+                                        PyramidStrategy.start_capital_per_cent + x *
+                                    PyramidStrategy.difference_capital_per_cent, action.time))
+
+            return
         new_orders = []
         for x in range(0, 5):
             if not any(PyramidStrategy.price_equal(order.price, start_price * (1. - (x + order.type)
@@ -39,7 +48,7 @@ class PyramidStrategy(StrategyRealizer):
         return new_orders
 
     @staticmethod
-    def __remove(price, start_price, time, orders):
+    def __remove(action, start_price, orders):
         return orders
 
     @staticmethod
