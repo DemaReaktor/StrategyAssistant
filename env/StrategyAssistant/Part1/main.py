@@ -5,7 +5,7 @@ from datetime import datetime
 
 if __name__ == '__main__':
     # get historical info about price
-    data_frame = BinanceData(start=datetime.strptime('19-03-2023', '%d-%m-%Y'),
+    data_frame = BinanceData(start=datetime.strptime('21-03-2023', '%d-%m-%Y'),
                              end=datetime.strptime('01-10-2023', '%d-%m-%Y'),
                              interval='1d',
                              pair='ETHUSDT'

@@ -4,7 +4,7 @@ from StrategyAssistant.Scripts.Action import ActionType
 
 
 class PyramidStrategy(StrategyRealizer):
-    distance = 0.05
+    distance = 0.085
     difference_capital_per_cent = 0.02
 
     def __init__(self, start_price):
