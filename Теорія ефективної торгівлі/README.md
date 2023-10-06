@@ -50,4 +50,5 @@ x+1.125x+1.25x+1.375x+1.5x=1; x=1/6.25=4/25;
 Для 2 завдання дану стратегію будем називати "Піраміда"(чим нижче йде ціна, тим більше капіталу зустріне). 
 
 [Завдання 2 Частина 1](https://github.com/DemaReaktor/StrategyAssistant/tree/main/env/StrategyAssistant/Part1)
+
 [Завдання 2 Частина 2](https://github.com/DemaReaktor/StrategyAssistant/tree/main/env/StrategyAssistant/Part2)
