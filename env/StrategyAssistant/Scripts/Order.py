@@ -13,10 +13,10 @@ class OrderStatus(IntEnum):
 
 
 class Order:
-    def __init__(self, type, price, count, start, status=OrderStatus.Active):
+    def __init__(self, type, price, count, start):
         self.__type = type
         self.__price = price
-        self.__status = status
+        self.__status = OrderStatus.Active
         self.__count = count
         self.__start = start
         self.__end = None
