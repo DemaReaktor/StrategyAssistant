@@ -1,0 +1,8 @@
+# created by virtualenv automatically
+/*
+!/StrategyAssistant
+/StrategyAssistant/__pycache__
+/StrategyAssistant/.idea
+/StrategyAssistant/Part2/Config.py
+!/.gitignore
+*.pyc
