@@ -3,6 +3,7 @@ from StrategyAssistant.Scripts.BinanceData import BinanceData
 from StrategyAssistant.Scripts.Order import OrderStatus, OrderType
 from StrategyAssistant.Scripts.PyramidStrategy import PyramidStrategy
 from datetime import datetime
+from StrategyAssistant.Scripts.BinanceData import BinanceData
 import re
 
 def get_args(args):
@@ -10,7 +11,8 @@ def get_args(args):
     if '--pair' in args:
         request_args['pair'] = args[args.index('--pair') + 1]
     if '--interval' in args:
-        request_args['interval'] = args[args.index('--interval') + 1]
+        arg = args[args.index('--interval') + 1]
+        request_args['interval'] = arg if arg in BinanceData.intervals() else '1d'
     try:
         request_args['start'] = datetime.strptime(args[args.index('--start') + 1], '%d-%m-%Y')
     except:
@@ -22,15 +24,11 @@ def get_args(args):
 
     strategy_args = dict()
     try:
-        arg = float(args[args.index('--distance') + 1])
-        if arg >= 0 and arg < 0.2:
-            strategy_args['distance'] = arg
+        strategy_args['distance'] = float(args[args.index('--distance') + 1])
     except:
         pass
     try:
-        arg = float(args[args.index('--difference_capital_per_cent') + 1])
-        if arg >= 0 and arg < 0.2:
-            strategy_args['difference_capital_per_cent'] = arg
+        strategy_args['difference_capital_per_cent'] = float(args[args.index('--difference_capital_per_cent') + 1])
     except:
         pass
     return (request_args, strategy_args)

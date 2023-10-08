@@ -1,27 +1,31 @@
 from StrategyAssistant.Scripts.Order import OrderStatus, OrderType
 from StrategyAssistant.Scripts.Action import Action, ActionType
+from abc import ABC, abstractmethod
 
 
-class StrategyRealizer:
-    def __init__(self, strategy, start_price):
-        self.__strategy = strategy
+class StrategyRealizer(ABC):
+    def __init__(self, start_price):
         self.__orders = []
         self.__start_price = start_price
 
+    @abstractmethod
+    def strategy(self, action, orders):
+        pass
+
     def start(self, time):
         action = Action(ActionType.Start, self.__start_price, time)
-        self.__orders = self.__strategy(action, self.__orders)
+        self.__orders = self.strategy(action, self.__orders)
 
     def finish(self, price, time):
         action = Action(ActionType.Finish, price, time)
-        self.__orders = self.__strategy(action, self.__orders)
+        self.__orders = self.strategy(action, self.__orders)
 
     def update(self, price, time):
         orders = [order for order in self.__orders if order.status == OrderStatus.Active]
         [order.update(price, time) for order in self.__orders]
         orders = [order for order in orders if not (order.status == OrderStatus.Active)]
         action = Action(ActionType.Update, price, time, orders=orders)
-        self.__orders = self.__strategy(action, self.__orders)
+        self.__orders = self.strategy(action, self.__orders)
 
     def get_income(self):
         summa = sum([order.count for order in self.__orders if order.status == OrderStatus.Successfully and
@@ -49,7 +53,3 @@ class StrategyRealizer:
     @property
     def _start_price(self):
         return self.__start_price
-
-    @property
-    def _strategy(self):
-        return self.__strategy

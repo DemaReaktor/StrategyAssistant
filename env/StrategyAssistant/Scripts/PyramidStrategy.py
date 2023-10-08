@@ -4,18 +4,18 @@ from StrategyAssistant.Scripts.Action import ActionType
 
 
 class PyramidStrategy(StrategyRealizer):
-    def __init__(self, start_price, distance = 0.085, difference_capital_per_cent = 0.02):
-        self.__distance = distance
-        self.__difference_capital_per_cent = difference_capital_per_cent
-        super().__init__(self.__strategy, start_price)
+    def __init__(self, start_price, distance = 0.085, difference_capital = 0.02):
+        self.__distance = distance if distance >= 0 and distance < 0.25 else 0.085
+        self.__difference_capital = difference_capital if difference_capital >= 0 and distance < 0.2 else 0.02
+        super().__init__(start_price)
         
-    def __strategy(self, action, orders):
+    def strategy(self, action, orders):
         if action.type == ActionType.Start:
             self.__prices = []
             for x in range(0, 5):
                 self.__prices.append(self._start_price * (1 - x * self.__distance))
                 orders.append(Order(OrderType.Buy, self.__prices[x], 0.2 + (x - 2) *
-                                    self.__difference_capital_per_cent, action.time))
+                                    self.__difference_capital, action.time))
             self.__prices.insert(0, self._start_price * (1 + self.__distance))
             return orders
         if action.type == ActionType.Update and hasattr(self, '_PyramidStrategy__prices'):
