@@ -4,7 +4,9 @@ from Visualizer import Visualizer
 from BotWithUsers import BotWithUsers
 import Config
 
+# create telegram bot
 bot = BotWithUsers(Config.BOT_TOKEN)
+
 texts = {
     'мову змінено на українську' : 'language is English now',
     'вкажаіть що саме вас цікавить' : 'choose one of variations',

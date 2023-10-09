@@ -7,6 +7,8 @@ from StrategyAssistant.Scripts.BinanceData import BinanceData
 import re
 
 def get_args(args):
+    # set all args into 2 lists
+    # first list - requests_args
     request_args = dict()
     if '--pair' in args:
         request_args['pair'] = args[args.index('--pair') + 1]
@@ -22,6 +24,7 @@ def get_args(args):
     except:
         request_args['end'] = datetime.strptime('01-10-2023', '%d-%m-%Y')
 
+    # first list - strategy_args
     strategy_args = dict()
     try:
         strategy_args['distance'] = float(args[args.index('--distance') + 1])
@@ -45,13 +48,12 @@ if __name__ == '__main__':
 
     # start strategy
     strategy = PyramidStrategy(float(data_frame.open_price.iloc[0]),**strategy_args)
+    data_frame.close_time = [datetime.fromtimestamp(data_frame.iloc[i].close_time / 1000.0) for i in range(0, len(data_frame))]
     strategy.start(data_frame.at[0, 'close_time'])
 
     # set historical prices into strategy
-    data_frame.close_time = [datetime.fromtimestamp(data_frame.iloc[i].close_time / 1000.0) for i in range(0, len(data_frame))]
     for i in range(0, len(data_frame)):
         strategy.update(float(data_frame.iloc[i].open_price), data_frame.iloc[i].close_time)
-
     # Do active sell orders have average price more than current price? (Will last sell order be income or not?)
     summa_price = 0.
     count = 0

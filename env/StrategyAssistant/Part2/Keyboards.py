@@ -1,8 +1,7 @@
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 from Language import LanguageController
-import json
 class Keyboards:
+    """has all keyboards"""
     texts = {
         'що робить бот?': 'what does bot do',
         'суть стратегії?': 'logic of strategy',
@@ -12,7 +11,7 @@ class Keyboards:
     LanguageController.add(texts)
 
     @staticmethod
-    def main_keyboard(language):
+    def main_keyboard(language:LanguageController)->InlineKeyboardMarkup:
         keyboard = InlineKeyboardMarkup([[
                 InlineKeyboardButton(text=language.translate('що робить бот?'),callback_data='що робить бот'),
         InlineKeyboardButton(text=language.translate('суть стратегії?'),callback_data='суть стратегії'),
@@ -23,7 +22,7 @@ class Keyboards:
         return keyboard
 
     @staticmethod
-    def strategy_keyboard(language):
+    def strategy_keyboard(language:LanguageController)->InlineKeyboardMarkup:
         keyboard = InlineKeyboardMarkup([[
         InlineKeyboardButton(text=language.translate('почати'), callback_data='почати'),
         InlineKeyboardButton(text=language.translate('показати налаштування'), callback_data='show settings'),

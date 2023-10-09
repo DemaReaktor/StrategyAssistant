@@ -5,11 +5,13 @@ from datetime import datetime
 from StrategyAssistant.Scripts.Order import OrderStatus, OrderType
 
 class User:
-    def __init__(self, id):
+    """has information about user"""
+    def __init__(self, id:int):
         if not isinstance(id, int):
             raise TypeError('id should have type "int"')
         self.__id = id
         self.__language = LanguageController()
+        # default values
         self.strategy_args = {
             'summa':1000,
             'start':datetime.strptime('01-01-2022', '%d-%m-%Y'),
@@ -22,14 +24,15 @@ class User:
         self.variant = None
 
     @property
-    def id(self):
+    def id(self)->int:
         return self.__id
 
     @property
-    def lang(self):
+    def lang(self)->LanguageController:
         return self.__language
 
-    def try_set_settings(self, key, value):
+    def try_set_settings(self, key:str, value):
+        """try set value with key into settings"""
         if not(key in ['pair','start','end','interval','distance','difference_capital','summa']):
             raise ValueError('key should be pair or start or end or interval or distance or difference_capital')
         if key == 'interaval':
@@ -72,7 +75,8 @@ class User:
         self.strategy_args[key] = value
         return None
 
-    def show_settings(self):
+    def show_settings(self)->str:
+        """return text with settings"""
         data = dict()
         for key in self.strategy_args.keys():
             if isinstance(self.strategy_args[key], datetime):
@@ -82,7 +86,10 @@ class User:
         data['summa'] = str(self.strategy_args['summa']) + ' $'
         return ', '.join(f'{key}: {value}' for key,value in data.items()).removeprefix(', ').replace('_', ' ')
 
-    def start_strategy(self):
+    def start_strategy(self)->(str,list[float],list[datetime]):
+        """start, update and finish strategy
+        return result as text, list of incomes of every time and times"""
+        # get args
         binance_kwargs = dict()
         strategy_kwargs = dict()
         summa = self.strategy_args['summa']
@@ -96,6 +103,8 @@ class User:
         # start
         max_down = 0
         binance_data = BinanceData(**binance_kwargs).get_data_frame()
+        binance_data.close_time = [datetime.fromtimestamp(binance_data.iloc[i].close_time / 1000.0) for i in
+                                 range(0, len(binance_data))]
         strategy = PyramidStrategy(float(binance_data.at[0,'open_price']),**strategy_kwargs)
         strategy.start(binance_data.close_time.iloc[0])
         summas = []

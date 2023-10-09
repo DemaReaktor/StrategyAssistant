@@ -1,0 +1,5 @@
+DateTime==5.2
+matplotlib==3.8.0
+mtranslate==1.8
+pandas==2.1.1
+pyTelegramBotAPI==4.14.0

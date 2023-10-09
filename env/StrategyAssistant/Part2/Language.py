@@ -4,13 +4,16 @@ import asyncio
 
 
 class LanguageController:
+    """controls language
+    translate text"""
     __texts = dict()
 
     def __init__(self):
         self.__is_ukrainian = True
 
     @staticmethod
-    def add(text, translate):
+    def add(text:str, translate:str|list[str]):
+        """add text and traslation of this to table"""
         if not isinstance(text, str):
             raise TypeError('text should have type "str"')
         if not isinstance(translate, str) and not isinstance(translate, list):
@@ -21,6 +24,7 @@ class LanguageController:
 
     @staticmethod
     def add(dictionary):
+        """add dictionary to table"""
         if not isinstance(dictionary, dict):
             raise TypeError('dictionary should have type "dict"')
         for key, value in dictionary.items():
@@ -32,9 +36,13 @@ class LanguageController:
                 raise TypeError('every element of translate element should have type "str"')
         LanguageController.__texts.update(dictionary)
 
-    def translate(self, text):
+    def translate(self, text:str)->str:
+        """translate text
+        if this text is not in table It translate with Google Translater"""
+        # if text is not in table
         if not (text in LanguageController.__texts.keys()):
             return text if self.__is_ukrainian else google_translate(text,'en','ua')
+
         value = LanguageController.__texts[text]
         if isinstance(value, list):
             if not self.__is_ukrainian and value[1] == '':
@@ -44,4 +52,5 @@ class LanguageController:
         return text if self.__is_ukrainian else value
 
     def change(self):
+        """change language"""
         self.__is_ukrainian = not self.__is_ukrainian
