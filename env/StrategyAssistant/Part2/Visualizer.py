@@ -14,5 +14,4 @@ class Visualizer:
                 return
             self.__plot.plot([i,i+1],[self.__data[i],self.__data[i+1]],color = 'red' if self.__data[i] > self.__data[i + 1] else 'green')
     def save_picture(self, name):
-        # plt.plot('x', 'summa', data=self.__graph, linestyle='-', marker=',',color=self.__color)
         plt.savefig(name)
