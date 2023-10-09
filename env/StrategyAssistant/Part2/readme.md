@@ -21,8 +21,8 @@
 При запуску стратегія певний час буде завантажуватись, потім виведе загальні результати і зображення де буде показано історію змін прибутку.
 
 Приклад:
-[](T6.png)
-[](T7.png)
+([T6.png](https://github.com/DemaReaktor/StrategyAssistant/blob/main/env/StrategyAssistant/Part2/T6.png))
+[](https://github.com/DemaReaktor/StrategyAssistant/blob/main/env/StrategyAssistant/Part2/T7.png)
 
 # Налаштування 
 Стратегія має декілька зміних, яких можна міняти до запуску. Пара(pair) вказує, з якої саме криптовалюти буде братись ціни(BTCUSDT,ETHUSDT etc). Початок(start) - кінець(end) - проміжок часу, з якого братимуться ціни. Інтервал(interval) - інтервал між цінами, може приймати значення: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w. Відстань(distance) - відстань між ордерами купівлі або продажі. Різниця(difference capital) - різниця між частинами капіталу.
