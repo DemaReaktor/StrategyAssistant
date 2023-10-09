@@ -1,7 +1,7 @@
-from telebot import TeleBot
+from telebot.async_telebot import AsyncTeleBot
 from User import User
 
-class BotWithUsers(TeleBot):
+class BotWithUsers(AsyncTeleBot):
     def __init__(self,token : str):
         super().__init__(token)
         self.__users = dict()

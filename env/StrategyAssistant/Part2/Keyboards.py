@@ -13,23 +13,27 @@ class Keyboards:
 
     @staticmethod
     def main_keyboard(language):
-        keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton(text=language.translate('що робить бот?'),callback_data='що робить бот'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('суть стратегії?'),callback_data='суть стратегії'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('як налаштувати стратегію?'),
-                                          callback_data='як налаштувати стратегію'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('які обмеження в стратегії?'),
-                                          callback_data='які обмеження в стратегії'))
+        keyboard = InlineKeyboardMarkup([[
+                InlineKeyboardButton(text=language.translate('що робить бот?'),callback_data='що робить бот'),
+        InlineKeyboardButton(text=language.translate('суть стратегії?'),callback_data='суть стратегії'),
+            ],[
+            InlineKeyboardButton(text=language.translate('як налаштувати стратегію?'), callback_data='як налаштувати стратегію'),
+        InlineKeyboardButton(text=language.translate('які обмеження в стратегії?'), callback_data='які обмеження в стратегії'),
+        ]])
         return keyboard
 
     @staticmethod
     def strategy_keyboard(language):
-        keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton(text=language.translate('почати'), callback_data='почати'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('показати налаштування'), callback_data='show settings'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('пара'), callback_data='pair'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('початок'), callback_data='start'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('кінець'),callback_data='end'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('інтервал'),callback_data='interval'))
-        keyboard.add(InlineKeyboardButton(text=language.translate('відстань'),callback_data='distance'))
+        keyboard = InlineKeyboardMarkup([[
+        InlineKeyboardButton(text=language.translate('почати'), callback_data='почати'),
+        InlineKeyboardButton(text=language.translate('показати налаштування'), callback_data='show settings'),
+            ],[
+        InlineKeyboardButton(text=language.translate('сума'), callback_data='summa'),
+        InlineKeyboardButton(text=language.translate('пара'), callback_data='pair'),
+        InlineKeyboardButton(text=language.translate('початок'), callback_data='start'),
+        InlineKeyboardButton(text=language.translate('кінець'),callback_data='end'),
+        InlineKeyboardButton(text=language.translate('інтервал'),callback_data='interval'),
+        InlineKeyboardButton(text=language.translate('відстань'),callback_data='distance'),
+        InlineKeyboardButton(text=language.translate('різниця'),callback_data='difference_capital'),
+            ]])
         return keyboard

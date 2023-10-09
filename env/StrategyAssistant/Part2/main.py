@@ -4,9 +4,7 @@ from Handlers import bot
 # from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
 # from aiogram.types.inline_keyboard_button import InlineKeyboardButton
 import json
+import asyncio
 
 if __name__ == "__main__":
-    # buttons = [[InlineKeyboardButton(text='H',callback_data='f')]]
-    # keyboard = InlineKeyboardMarkup(inline_keyboard=[[]])
-    # json.dumps(keyboard)
-    bot.polling(none_stop=True, interval=0)
+    asyncio.run(bot.polling(none_stop=True, interval=0))

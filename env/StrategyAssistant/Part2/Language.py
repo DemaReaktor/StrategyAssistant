@@ -1,5 +1,6 @@
 import requests
 from mtranslate import translate as google_translate
+import asyncio
 
 
 class LanguageController:
@@ -36,10 +37,10 @@ class LanguageController:
             return text if self.__is_ukrainian else google_translate(text,'en','ua')
         value = LanguageController.__texts[text]
         if isinstance(value, list):
-            if not self.__is_ukrainian and value[1 - self.__is_ukrainian] == '':
+            if not self.__is_ukrainian and value[1] == '':
                 # translate with google translater
-                value[1] = google_translate(value[0],'en','ua')
-            return value[1 - self.__is_ukrainian]
+                LanguageController.__texts[text] = [value[0] , google_translate(value[0],'en','ua')]
+            return LanguageController.__texts[text][1 - self.__is_ukrainian]
         return text if self.__is_ukrainian else value
 
     def change(self):

@@ -2,6 +2,7 @@ from Language import LanguageController
 from StrategyAssistant.Scripts.BinanceData import BinanceData
 from StrategyAssistant.Scripts.PyramidStrategy import PyramidStrategy
 from datetime import datetime
+from StrategyAssistant.Scripts.Order import OrderStatus, OrderType
 
 class User:
     def __init__(self, id):
@@ -10,6 +11,7 @@ class User:
         self.__id = id
         self.__language = LanguageController()
         self.strategy_args = {
+            'summa':1000,
             'start':datetime.strptime('01-01-2022', '%d-%m-%Y'),
             'end':datetime.strptime('01-01-2023', '%d-%m-%Y'),
             'interval':'1d',
@@ -20,11 +22,15 @@ class User:
         self.variant = None
 
     @property
+    def id(self):
+        return self.__id
+
+    @property
     def lang(self):
         return self.__language
 
     def try_set_settings(self, key, value):
-        if not(key in ['pair','start','end','interval','distance','difference_capital']):
+        if not(key in ['pair','start','end','interval','distance','difference_capital','summa']):
             raise ValueError('key should be pair or start or end or interval or distance or difference_capital')
         if key == 'interaval':
             if not(value in BinanceData.intervals()):
@@ -32,23 +38,25 @@ class User:
                         'або 8h або 12h або 1d або 3d або 1w')
         if key == 'start':
             try:
-                date = datetime.strptime(value, '%d-%m-%Y')
+                date = datetime.strptime(value, ('%H:%M 'if ':' in value else '')+'%d-%m-%Y')
                 if date >= self.strategy_args['end']:
-                    return f'старт має бути до кінця, кінець зараз: {self.strategy_args["end"]}'
+                    return f'старт має бути до кінця, кінець зараз: {"{%H:%M %d-%m-%Y}".format(self.strategy_args["end"])}'
                 self.strategy_args[key] = date
                 return None
-            except:
-                return 'формат старту має бути день-місяць-рік, наприклад: 01-01-2023'
+            except Exception as e:
+                print(e)
+                return 'формат старту має бути день-місяць-рік(додатково година:хвилина), наприклад: 01-01-2023 , 05:55 03-03-2023'
         if key == 'end':
             try:
-                date = datetime.strptime(value, '%d-%m-%Y')
+                date = datetime.strptime(value, ('%H:%M 'if ':' in value else '')+'%d-%m-%Y')
                 if date < self.strategy_args['start']:
-                    return f'кінець має бути після початку, початок зараз: {self.strategy_args["start"]}'
+                    return f'кінець має бути після початку, початок зараз: {"{%H:%M %d-%m-%Y}".format(self.strategy_args["start"])}'
                 self.strategy_args[key] = date
                 return None
-            except:
-                return 'формат кінця має бути день-місяць-рік, наприклад: 01-01-2023'
-        if key in ['distance','difference_capital']:
+            except Exception as e:
+                print(e)
+                return 'формат кінця має бути день-місяць-рік(додатково година:хвилина), наприклад: 01-01-2023, 05:55 22-11-2023'
+        if key in ['distance','difference_capital','summa']:
             try:
                 number = float(value)
                 if number <= 0:
@@ -65,22 +73,64 @@ class User:
         return None
 
     def show_settings(self):
-        return ', '.join(f'{key}:{value}' for key,value in self.strategy_args.items()).removeprefix(', ')
+        data = dict()
+        for key in self.strategy_args.keys():
+            if isinstance(self.strategy_args[key], datetime):
+                data[key] = '{:%H:%M %d-%m-%Y}'.format(self.strategy_args[key])
+                continue
+            data[key] = self.strategy_args[key]
+        data['summa'] = str(self.strategy_args['summa']) + ' $'
+        return ', '.join(f'{key}: {value}' for key,value in data.items()).removeprefix(', ').replace('_', ' ')
 
     def start_strategy(self):
         binance_kwargs = dict()
-        strategy_kwargs = self.strategy_args
-        elements = []
+        strategy_kwargs = dict()
+        summa = self.strategy_args['summa']
         for key in self.strategy_args.keys():
             if key in ['pair','start','end','interval']:
                 binance_kwargs[key] = self.strategy_args[key]
-                elements.append(key)
-        for element in elements:
-            strategy_kwargs.pop(element)
+            else:
+                strategy_kwargs[key] = self.strategy_args[key]
+        strategy_kwargs.pop('summa')
+
+        # start
+        max_down = 0
         binance_data = BinanceData(**binance_kwargs).get_data_frame()
         strategy = PyramidStrategy(float(binance_data.at[0,'open_price']),**strategy_kwargs)
         strategy.start(binance_data.close_time.iloc[0])
+        summas = []
+        dates = []
+
+        # update
         for i in range(0, len(binance_data)):
             strategy.update(float(binance_data.at[i,'open_price']), binance_data.at[i,'close_time'])
+            income = strategy.get_income_with_active(float(binance_data.at[i,'open_price']))
+            summas.append(income)
+            dates.append(binance_data.at[i,'close_time'])
+            max_down = min(max_down, income)
+
+        # is last order income
+        summa_price = 0.
+        count = 0
+        for order in strategy.orders:
+            if order.status == OrderStatus.Active and order.type == OrderType.Sell:
+                summa_price += order.price
+                count += 1
+        last_price = float(binance_data.open_price.iloc[-1])
+        is_income_last = 0 if count == 0 else (1 if summa_price / count < last_price else -1)
+
+        # finish strategy
+        are_sell_active = any(
+            order.type == OrderType.Sell and order.status == OrderStatus.Active for order in strategy.orders)
         strategy.finish(float(binance_data.open_price.iloc[-1]),binance_data.close_time.iloc[-1])
-        return strategy.get_income()
+
+        # set text
+        text = 'Результат:\n'
+        text += f'кількість успішних угод:' + str(len([order for order in strategy.orders if order.type == OrderType.Sell
+                    and order.status == OrderStatus.Successfully]) + (1 if is_income_last == 1 else 0) - are_sell_active)
+        text += f'\nкількість провальних угод:' + str(1 if is_income_last == -1 else 0)
+        text += f'\nмаксимальна просадка: {round(max_down * 100, 2)}'
+        income = strategy.get_income()
+        text += f'\nприбуток: {round(income * 100, 2)}%'
+        text += f'\nзагальний прибуток: {round(income * summa, 2)} $'
+        return (text,summas,dates)
